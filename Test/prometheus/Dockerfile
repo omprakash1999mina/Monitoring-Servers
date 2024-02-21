@@ -1,5 +1,10 @@
 FROM prom/prometheus:latest
+
+# Copy the Prometheus configuration file to the container
 COPY prometheus.yml /etc/prometheus/prometheus.yml
+
+# Create the directories for volumes
+RUN mkdir -p /prometheus
 
 # Expose Prometheus port
 EXPOSE 9090
