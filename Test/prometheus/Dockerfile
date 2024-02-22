@@ -1,16 +1,20 @@
 FROM prom/prometheus:latest
 
-# Copy the Prometheus configuration file to the container
-COPY prometheus.yml /etc/prometheus/prometheus.yml
-
 # Create the directories for volumes
 RUN mkdir -p /prometheus
+# Set the working directory
+WORKDIR /prometheus
+
+# Copy the Prometheus configuration file to the container
+COPY prometheus.yml prometheus/prometheus.yml
 
 # Expose Prometheus port
 EXPOSE 9090
 
-# Set the working directory
-WORKDIR /prometheus
+# Run sed command to replace IP_ADDRESS
+# RUN sed -i '' -e "s/PROMETHEUS_TARGET/$PROMETHEUS_TARGET/" prometheus/prometheus.yml
+USER root
+RUN sed -i -e "s/PROMETHEUS_TARGET/${PROMETHEUS_TARGET//\//\\/}/" prometheus/prometheus.yml
 
 # Start Prometheus with the provided configuration
-CMD ["--web.enable-lifecycle", "--config.file=/etc/prometheus/prometheus.yml"]
+CMD ["--web.enable-lifecycle", "--config.file=prometheus/prometheus.yml"]
